@@ -178,6 +178,55 @@ def build_list_communes(data):
     return sorted(list(lc))
 
 
+def get_pop_commune(data, code):
+    """retourne la population totale d'une commune pour l'année de recensement la plus récente
+
+    Args:
+        data (list): la liste de dictionnaires retournée par read_file()
+        code (str) : code de la commune considérée
+
+    Returns:
+        (int, str, str): (nom de la commune, population totale, année de recensement concernée)
+
+    >>> data = read_file(FILENAME)
+    >>> get_pop_commune(data, '39124')
+    ('Chaumergy', 492, '2018')
+    >>> get_pop_commune(data, '63001')
+    ('Aigueperse', 2790, '2018')
+    >>> get_pop_commune(data, '76005')
+    ('Amfreville-la-Mi-Voie', 3354, '2018')
+    >>> get_pop_commune(data, '74275')
+    ('Talloires-Montmin', 2039, '2018')
+    >>> get_pop_commune(data, '94022')
+    ('Choisy-le-Roi', 46366, '2018')
+    >>> get_pop_commune(data, '11151')
+    ("Fontiès-d'Aude", 509, '2018')
+    >>> get_pop_commune(data, '53210')
+    ("Saint-Denis-d'Anjou", 1581, '2018')
+    >>> get_pop_commune(data, '30266')
+    ('Saint-Jean-de-Maruéjols-et-Avéjan', 897, '2018')
+    >>> get_pop_commune(data, '07222')
+    ('Saint-Cierge-sous-le-Cheylard', 211, '2018')
+    >>> get_pop_commune(data, '00000')
+    
+    """
+    # votre code ici
+    # garder que les données de la commune visée
+    lignes_associees = [
+        row for row in data
+        if row.get("Code Officiel Commune / Arrondissement Municipal") == code
+    ]
+    # si commune mal orthographiée ou inexistante
+    if not lignes_associees :
+        return None
+    annee_rec = max(lignes_associees, key=lambda r : int(r["Année de recensement"]))
+    nom = annee_rec["Nom Officiel Commune / Arrondissement Municipal"]
+    pop = annee_rec["Population totale"]
+    annee = annee_rec["Année de recensement"]
+    t = (nom, pop, annee)
+    return t
+
+
 
 def main():
     # votre code de test ici
@@ -188,11 +237,10 @@ def main():
     data = read_file(FILENAME)
     l = build_list_departements(data)
     c = build_list_communes(data)
-    # p = get_pop_commune(data, '39124')
+    p = get_pop_commune(data, '39124')
     # d = build_dict_departements(data)
     # s = stat_by_dpt(d, '77')
-    print(f"Nombre de communes : {len(c)}")
-    print("Exemple :", c[999])
+    print("Exemple :", p)
 
     
 # Ne pas modifier le code ci-dessous
